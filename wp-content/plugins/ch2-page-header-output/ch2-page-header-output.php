@@ -83,10 +83,14 @@ function ch2pho_get_options() {
 add_action( 'admin_menu', 'ch2pho_settings_menu' );
 
 function ch2pho_settings_menu() {
-	add_options_page( 'My Google Analytics Configuration',
+	$options_page = add_options_page( 'My Google Analytics Configuration',
 		'My Google Analytics', 'manage_options',
 		'ch2pho-my-google-analytics',
 		'ch2pho_config_page' );
+
+	if ( ! empty( $options_page ) ) {
+		add_action( 'load-' . $options_page, 'ch2pho_help_tabs' );
+	}
 }
 
 function ch2pho_config_page() {
@@ -97,11 +101,12 @@ function ch2pho_config_page() {
     <div id="ch2pho-general" class="wrap">
         <h2>My Google Analytics</h2><br/>
 
-	    <?php if ( isset( $_GET['message'] ) &&
-	               $_GET['message'] == '1' ) { ?>
+		<?php if ( isset( $_GET['message'] )
+		           && $_GET['message'] == '1'
+		) { ?>
             <div id='message' class='updated fade'>
                 <p><strong>Settings Saved</strong></p></div>
-	    <?php } ?>
+		<?php } ?>
 
         <form method="post" action="admin-post.php">
             <input type="hidden" name="action"
@@ -152,10 +157,39 @@ function process_ch2pho_options() {
 	update_option( 'ch2pho_options', $options );
 
 	// Redirect the page to the configuration form
-	wp_redirect( add_query_arg( [ 'page'    => 'ch2pho-my-google-analytics',
-	                              'message' => '1',
+	wp_redirect( add_query_arg( [
+		'page' => 'ch2pho-my-google-analytics',
+		'message' => '1',
 	],
 		admin_url( 'options-general.php' ) ) );
 
 	exit;
 }
+
+function ch2pho_help_tabs() {
+    $screen = get_current_screen();
+    $screen->add_help_tab(array(
+            'id' => 'ch2pho-plugin-help-instructions',
+            'title' => 'Instructions',
+            'callback' => 'ch2pho_plugin_help_instructions',
+    ));
+
+	$screen->add_help_tab( array(
+		'id' => 'ch2pho-plugin-help-faq',
+		'title' => 'FAQ',
+		'callback' => 'ch2pho_plugin_help_faq',
+	) );
+
+	$screen->set_help_sidebar( '<p>This is the sidebar
+        content</p>' );
+}
+
+function ch2pho_plugin_help_instructions() { ?>
+    <p>These are instructions explaining how to use this plugin.</p>
+
+<?php }
+
+function ch2pho_plugin_help_faq() { ?>
+    <p>These are the most frequently asked questions on the use of this plugin.</p>
+
+<?php }
