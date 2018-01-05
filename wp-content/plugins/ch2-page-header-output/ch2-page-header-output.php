@@ -97,6 +97,12 @@ function ch2pho_config_page() {
     <div id="ch2pho-general" class="wrap">
         <h2>My Google Analytics</h2><br/>
 
+	    <?php if ( isset( $_GET['message'] ) &&
+	               $_GET['message'] == '1' ) { ?>
+            <div id='message' class='updated fade'>
+                <p><strong>Settings Saved</strong></p></div>
+	    <?php } ?>
+
         <form method="post" action="admin-post.php">
             <input type="hidden" name="action"
                    value="save_ch2pho_options"/>
@@ -146,7 +152,9 @@ function process_ch2pho_options() {
 	update_option( 'ch2pho_options', $options );
 
 	// Redirect the page to the configuration form
-	wp_redirect( add_query_arg( 'page', 'ch2pho-my-google-analytics',
+	wp_redirect( add_query_arg( [ 'page'    => 'ch2pho-my-google-analytics',
+	                              'message' => '1',
+	],
 		admin_url( 'options-general.php' ) ) );
 
 	exit;
