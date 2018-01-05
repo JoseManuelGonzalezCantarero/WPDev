@@ -90,28 +90,64 @@ function ch2pho_settings_menu() {
 }
 
 function ch2pho_config_page() {
-    // Retrieve plugin configuration options from database
-    $options = ch2pho_get_options();
-    ?>
+	// Retrieve plugin configuration options from database
+	$options = ch2pho_get_options();
+	?>
 
     <div id="ch2pho-general" class="wrap">
-        <h2>My Google Analytics</h2><br />
+        <h2>My Google Analytics</h2><br/>
 
         <form method="post" action="admin-post.php">
             <input type="hidden" name="action"
-                   value="save_ch2pho_options" />
+                   value="save_ch2pho_options"/>
 
             <!-- Adding security through hidden referrer field -->
 			<?php wp_nonce_field( 'ch2pho' ); ?>
             Account Name: <input type="text" name="ga_account_name"
                                  value="<?php echo esc_html( $options['ga_account_name'] );
-			                     ?>"/><br />
+			                     ?>"/><br/>
             Track Outgoing Links: <input type="checkbox"
                                          name="track_outgoing_links"
 				<?php checked( $options['track_outgoing_links'] ); ?>/>
-            <br /><br />
+            <br/><br/>
             <input type="submit" value="Submit" class="button-primary"/>
         </form>
     </div>
 <?php }
 
+add_action( 'admin_init', 'ch2pho_admin_init' );
+
+function ch2pho_admin_init() {
+	add_action( 'admin_post_save_ch2pho_options', 'process_ch2pho_options' );
+}
+
+function process_ch2pho_options() {
+	// Check that user has proper security level
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Not allowed' );
+	}
+
+	// Check if nonce field configuration form is present
+	check_admin_referer( 'ch2pho' );
+
+	// Retrieve original plugin options array
+	$options = ch2pho_get_options();
+
+	// Cycle through all text form fields and store their values
+	// in the options array
+	foreach ( [ 'ga_account_name' ] as $option_name ) {
+		if ( isset( $_POST[ $option_name ] ) ) {
+			$options[ $option_name ]
+				= sanitize_text_field( $_POST[ $option_name ] );
+		}
+	}
+
+	// Store updated options array to database
+	update_option( 'ch2pho_options', $options );
+
+	// Redirect the page to the configuration form
+	wp_redirect( add_query_arg( 'page', 'ch2pho-my-google-analytics',
+		admin_url( 'options-general.php' ) ) );
+
+	exit;
+}
