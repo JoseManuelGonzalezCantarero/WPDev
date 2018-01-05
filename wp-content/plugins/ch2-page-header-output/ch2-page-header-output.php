@@ -57,3 +57,24 @@ function ch2lfa_footer_analytics_code() { ?>
     </script>
 
 <?php }
+
+register_activation_hook( __FILE__, 'ch2pho_set_default_options_array' );
+
+function ch2pho_set_default_options_array() {
+	ch2pho_get_options();
+}
+
+function ch2pho_get_options() {
+	$options = get_option( 'ch2pho_options', [] );
+
+	$new_options['ga_account_name']      = 'UA-0000000-0';
+	$new_options['track_outgoing_links'] = false;
+
+	$merged_options = wp_parse_args( $options, $new_options );
+
+	$compare_options = array_diff_key( $new_options, $options );
+	if ( empty( $options ) || ! empty( $compare_options ) ) {
+		update_option( 'ch2pho_options', $merged_options );
+	}
+	return $merged_options;
+}
