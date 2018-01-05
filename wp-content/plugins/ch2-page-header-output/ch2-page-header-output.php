@@ -88,3 +88,30 @@ function ch2pho_settings_menu() {
 		'ch2pho-my-google-analytics',
 		'ch2pho_config_page' );
 }
+
+function ch2pho_config_page() {
+    // Retrieve plugin configuration options from database
+    $options = ch2pho_get_options();
+    ?>
+
+    <div id="ch2pho-general" class="wrap">
+        <h2>My Google Analytics</h2><br />
+
+        <form method="post" action="admin-post.php">
+            <input type="hidden" name="action"
+                   value="save_ch2pho_options" />
+
+            <!-- Adding security through hidden referrer field -->
+			<?php wp_nonce_field( 'ch2pho' ); ?>
+            Account Name: <input type="text" name="ga_account_name"
+                                 value="<?php echo esc_html( $options['ga_account_name'] );
+			                     ?>"/><br />
+            Track Outgoing Links: <input type="checkbox"
+                                         name="track_outgoing_links"
+				<?php checked( $options['track_outgoing_links'] ); ?>/>
+            <br /><br />
+            <input type="submit" value="Submit" class="button-primary"/>
+        </form>
+    </div>
+<?php }
+
