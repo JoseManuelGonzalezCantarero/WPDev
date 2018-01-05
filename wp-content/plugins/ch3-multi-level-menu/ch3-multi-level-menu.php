@@ -20,4 +20,8 @@ function ch3mlm_admin_menu() {
 	add_submenu_page( 'ch3mlm-main-menu', 'My Complex Menu Sub-Config Page',
 		'Sub-Config Page', 'manage_options', 'ch3mlm-sub-menu',
 		'ch3mlm_my_complex_submenu' );
+
+	global $submenu;
+	$url = 'https://www.packtpub.com/books/info/packt/faq';
+	$submenu['ch3mlm-main-menu'][] = [ 'FAQ', 'manage_options', $url ];
 }
