@@ -10,7 +10,16 @@ License: GPLv2
  */
 add_action( 'wp_head', 'ch2pho_page_header_output' );
 
-function ch2pho_page_header_output() { ?>
+function ch2pho_page_header_output() {
+	$options = ch2pho_get_options();
+	if ( true == $options['track_outgoing_links'] ) {
+		add_filter( 'the_content', 'ch2lfa_link_filter_analytics' );
+    }
+
+    if ( true == $options['track_outgoing_links'] ) {
+	    add_action( 'wp_footer', 'ch2lfa_footer_analytics_code');
+    }
+	?>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -158,7 +167,7 @@ function process_ch2pho_options() {
 
 	// Redirect the page to the configuration form
 	wp_redirect( add_query_arg( [
-		'page' => 'ch2pho-my-google-analytics',
+		'page'    => 'ch2pho-my-google-analytics',
 		'message' => '1',
 	],
 		admin_url( 'options-general.php' ) ) );
@@ -167,18 +176,18 @@ function process_ch2pho_options() {
 }
 
 function ch2pho_help_tabs() {
-    $screen = get_current_screen();
-    $screen->add_help_tab(array(
-            'id' => 'ch2pho-plugin-help-instructions',
-            'title' => 'Instructions',
-            'callback' => 'ch2pho_plugin_help_instructions',
-    ));
+	$screen = get_current_screen();
+	$screen->add_help_tab( [
+		'id'       => 'ch2pho-plugin-help-instructions',
+		'title'    => 'Instructions',
+		'callback' => 'ch2pho_plugin_help_instructions',
+	] );
 
-	$screen->add_help_tab( array(
-		'id' => 'ch2pho-plugin-help-faq',
-		'title' => 'FAQ',
+	$screen->add_help_tab( [
+		'id'       => 'ch2pho-plugin-help-faq',
+		'title'    => 'FAQ',
 		'callback' => 'ch2pho_plugin_help_faq',
-	) );
+	] );
 
 	$screen->set_help_sidebar( '<p>This is the sidebar
         content</p>' );
@@ -190,6 +199,7 @@ function ch2pho_plugin_help_instructions() { ?>
 <?php }
 
 function ch2pho_plugin_help_faq() { ?>
-    <p>These are the most frequently asked questions on the use of this plugin.</p>
+    <p>These are the most frequently asked questions on the use of this
+        plugin.</p>
 
 <?php }
