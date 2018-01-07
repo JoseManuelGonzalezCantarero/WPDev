@@ -8,9 +8,14 @@ Author: Manu
 Author URI:
 License: GPLv2
  */
-add_action( 'admin_menu', 'ch3hmi_hide_menu_item' );
+define( 'ch3hmi', 1 );
+
+if ( is_admin() ) {
+	require plugin_dir_path( __FILE__ ) .
+	        'ch3-hide-menu-item-admin-functions.php';
+}
 
 function ch3hmi_hide_menu_item() {
-	remove_menu_page('edit-comments.php');
+	remove_menu_page( 'edit-comments.php' );
 	remove_submenu_page( 'options-general.php', 'options-permalink.php' );
 }
